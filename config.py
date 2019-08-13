@@ -1,5 +1,6 @@
 MySQL_DB = {
-	"username" : "@@@@@@",
-	"password" : "################",
-	"host" : "$$$$$$$$$$$$$$$$$$",
-	"database" : "%%%%%%%%%%%%%5" }
+    "username": "",
+    "password": "",
+    "host": "",
+    "database": ""
+}
