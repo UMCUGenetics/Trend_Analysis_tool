@@ -8,7 +8,8 @@ metadata = MetaData()
 
 
 def engine():
-    engine = create_engine('mysql+mysqlconnector://{username}:{password}@{host}/{database}'.format(
+    engine = create_engine('{connector}://{username}:{password}@{host}/{database}'.format(
+        connector=config.MySQL_DB['connector'],
         username=config.MySQL_DB['username'],
         password=config.MySQL_DB['password'],
         host=config.MySQL_DB['host'],
