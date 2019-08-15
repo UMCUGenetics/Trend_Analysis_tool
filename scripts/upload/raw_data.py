@@ -43,7 +43,7 @@ def up_to_database(path):
                         )
 
                     con_run = conn.execute(insert_run)
-                    run_ID = con_run.inserted_primary_key
+                    run_ID = con_run.inserted_primary_key[0]  # inserted_primary_key returns a list containing 1 key
 
                     for lane in lane_dict:
                         insert_lane = run_lane.insert().values(
