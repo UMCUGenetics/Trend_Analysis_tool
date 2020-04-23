@@ -145,7 +145,7 @@ def vcf_file(path):
     """
     try:
         dic_samples = {}
-        file_vcf = commands.getoutput('find {path}/ -maxdepth 1 -iname \'*.filtered_variants.vcf\''.format(
+        file_vcf = commands.getoutput('find {path}/ -maxdepth 1 -iname \'*.vcf\''.format(
             path=str(path)
             ))
         with open(file_vcf, 'r') as vcffile:
@@ -192,6 +192,8 @@ def runstat_file(path):
     """
     try:
         sample_dup = {}
+        sample_total_reads = {}
+        sample_mapped_percentage = {}
         runstats_file = commands.getoutput('find {path}/ -iname \'run_stats.txt\''.format(
             path=str(path)
             ))
@@ -204,17 +206,25 @@ def runstat_file(path):
                 stats = sample.split('\n')
 
                 sample_name = stats[0].split('/')[-1]
-                sample_name = sample_name.replace('_dedup.flagstat...', '')
+                sample_name = sample_name.replace('.flagstat...', '')
 
                 dup = 0
+                total_reads = 0
+                mapped_percentage = 0
                 for x in stats:
-                    if '%duplication' in x:
+                    if 'total (QC-passed reads + QC-failed reads)' in x:
+                        total_reads = int(x.strip().split()[0])
+                    elif 'mapped (' in x:
+                        mapped_percentage = float(x.split('(')[-1].split('%')[0])
+                    elif '%duplication' in x:
                         dup = float(x.split('%')[0].strip('\t').strip())
                         dup = float('{0:.2f}'.format(dup))
 
                 sample_dup[sample_name] = dup
+                sample_total_reads[sample_name] = total_reads
+                sample_mapped_percentage[sample_name] = mapped_percentage
 
-        return sample_dup
+        return sample_dup, sample_total_reads, sample_mapped_percentage
         # sample_dup[sample name] = duplication
 
     except Exception, e:
@@ -227,14 +237,12 @@ def HSMetrics(path):
     """
     try:
         sample_stats = {}
-        QCStats_file = commands.getoutput('find {path}/QCStats/ -iname \'HSMetrics_summary.transposed.txt\''.format(
+        QCStats_file = commands.getoutput('find {path} -iname \'HSMetrics_summary.txt\''.format(
             path=str(path)
             ))
 
         dict_columns = {
                 'Sample_name': {'column': 'Sample'},
-                'Total_number_of_reads': {'column': 'Total_number_of_reads'},
-                'Percentage_reads_mapped': {'column': 'Percentage_reads_mapped'},
                 'Total_reads': {'column': 'TOTAL_READS'},
                 'PF_reads': {'column': 'PF_READS'},
                 'PF_unique_reads': {'column': 'PF_UNIQUE_READS'},
@@ -302,7 +310,6 @@ def HSMetrics(path):
 
             qc_table = [list(i) for i in map(None, *sample)]
             qc_table[0][0] = 'Sample'
-
             table_header = qc_table[0][:-1]
             table_header = [item.replace(' ', '_') for item in table_header]
 
