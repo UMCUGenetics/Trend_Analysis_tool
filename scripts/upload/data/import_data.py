@@ -243,8 +243,6 @@ def HSMetrics(path):
 
         dict_columns = {
                 'Sample_name': {'column': 'Sample'},
-                #'Total_number_of_reads': {'column': 'Total_number_of_reads'},
-                #'Percentage_reads_mapped': {'column': 'Percentage_reads_mapped'},
                 'Total_reads': {'column': 'TOTAL_READS'},
                 'PF_reads': {'column': 'PF_READS'},
                 'PF_unique_reads': {'column': 'PF_UNIQUE_READS'},
