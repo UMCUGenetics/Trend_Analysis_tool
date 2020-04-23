@@ -8,13 +8,12 @@ import sys
 import data
 
 
-def up_to_database(path):
+def up_to_database(path, run):
     with warnings.catch_warnings():
         warnings.simplefilter("always")
         warnings.filterwarnings("error")
         try:
             path = path.strip().rstrip('/')
-            run = path.split("/")[-1]
             run_core = set_run.set_run_name(run)
             runs_processed_db = get.runs_processed()
 
@@ -22,7 +21,7 @@ def up_to_database(path):
                 sys.stdout.write('This run is already in the database \n')
             else:
                 sample_vcf = data.import_data.vcf_file(path)                   # dictionary: keys are sample names, values are vcf stats
-                sample_dup = data.import_data.runstat_file(path)               # dictionary: keys are sample names, values percentage duplication
+                sample_dup, sample_total_reads, sample_mapped_percentage = data.import_data.runstat_file(path)
                 dict_samples = data.import_data.HSMetrics(path)                # dictionary: keys are sample names, values are HSMetrics/Picard stats
 
                 engine = connection.engine()
@@ -39,6 +38,8 @@ def up_to_database(path):
                     bait_id = 0
                     vcf = sample_vcf[sample]
                     dup = sample_dup[sample]
+                    total_reads = sample_total_reads[sample]
+                    mapped_percentage = sample_mapped_percentage[sample]
                     stats = dict_samples[sample]
 
                     if stats['Bait_name'] in baitset_db:
@@ -68,8 +69,8 @@ def up_to_database(path):
 
                     try:
                         insert_sample = sample_processed.insert().values(
-                            Sample_name=sample, Total_number_of_reads=stats['Total_number_of_reads'],
-                            Percentage_reads_mapped=stats['Percentage_reads_mapped'],
+                            Sample_name=sample, Total_number_of_reads=total_reads,
+                            Percentage_reads_mapped=mapped_percentage,
                             Total_reads=stats['Total_reads'], PF_reads=stats['PF_reads'],
                             PF_unique_reads=stats['PF_unique_reads'], PCT_PF_reads=stats['PCT_PF_reads'],
                             PCT_PF_UQ_reads=stats['PCT_PF_UQ_reads'],

@@ -17,7 +17,7 @@ def upload_raw_data(args):
 
 def upload_processed_data(args):
     """Upload processed run data to the database"""
-    scripts.upload.run_processed.up_to_database(args.path)
+    scripts.upload.run_processed.up_to_database(args.path, args.run)
 
 
 def upload_sample_processed(args):
@@ -80,6 +80,7 @@ if __name__ == '__main__':
     parser_upload_raw.set_defaults(func=upload_raw_data)
 
     parser_upload_processed = subparser_upload.add_parser('processed_data', help='upload processed data to database')
+    parser_upload_processed.add_argument('run', help='Run name')
     parser_upload_processed.add_argument('path', help='Path to run')
     parser_upload_processed.set_defaults(func=upload_processed_data)
 
