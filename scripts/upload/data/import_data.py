@@ -200,7 +200,7 @@ def runstat_file(path):
 
         with open(runstats_file, 'r') as runstats:
             run_stats = runstats.read()
-            run_stats = run_stats.split('working')
+            run_stats = run_stats.split('working on ')
 
             for sample in run_stats[1:]:
                 stats = sample.split('\n')
